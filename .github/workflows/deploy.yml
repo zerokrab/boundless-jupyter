@@ -7,8 +7,6 @@ on:
 
 permissions:
   contents: read
-  pages: write
-  id-token: write
 
 # Only one deployment at a time; cancel in-progress if a new push arrives
 concurrency:
@@ -16,8 +14,8 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
-  build:
-    name: Build
+  build-and-deploy:
+    name: Build and Deploy
     runs-on: ubuntu-latest
 
     steps:
@@ -48,20 +46,14 @@ jobs:
             --contents epochs.csv \
             --output-dir _site
 
-      - name: Upload Pages artifact
-        uses: actions/upload-pages-artifact@v3
+      - name: Copy headers for Cloudflare Pages
+        run: cp _headers _site/_headers
+
+      - name: Deploy to Cloudflare Pages
+        uses: cloudflare/pages-action@v1
         with:
-          path: _site
-
-  deploy:
-    name: Deploy
-    needs: build
-    runs-on: ubuntu-latest
-    environment:
-      name: github-pages
-      url: ${{ steps.deployment.outputs.page_url }}
-
-    steps:
-      - name: Deploy to GitHub Pages
-        id: deployment
-        uses: actions/deploy-pages@v4
+          apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          projectName: boundless-jupyter
+          directory: _site
+          gitHubToken: ${{ secrets.GITHUB_TOKEN }}
