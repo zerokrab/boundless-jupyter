@@ -38,7 +38,8 @@ jobs:
         run: |
           pip install \
             jupyterlite-core \
-            jupyterlite-pyodide-kernel
+            jupyterlite-pyodide-kernel \
+            jupyter-server
 
       - name: Build site
         run: |
