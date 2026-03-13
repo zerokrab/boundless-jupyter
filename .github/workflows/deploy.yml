@@ -61,6 +61,7 @@ jobs:
           panel convert dashboard.py \
             --to pyodide-worker \
             --out _site/dashboard/
+          cp results.csv _site/dashboard/results.csv
 
       - name: Copy headers for Cloudflare Pages
         run: cp _headers _site/_headers
