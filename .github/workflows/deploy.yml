@@ -37,6 +37,7 @@ jobs:
           pip install \
             jupyterlite-core \
             jupyterlite-pyodide-kernel \
+            jupyterlite-ipywidgets \
             jupyter-server
 
       - name: Build site
