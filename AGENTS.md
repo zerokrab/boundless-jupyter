@@ -19,7 +19,7 @@ Instructions for AI agents working on this project.
 - **Epoch** = 48 hours. This is the standard timeframe and the POVW reward cadence.
 - All costs, revenue, and profit in the notebook are **per epoch**.
 - ~15 epochs per 30-day month (`EPOCHS_PER_MONTH = 15`).
-- **mhz** = million cycles per second (rate). In `gpu_configs` the column is `mhz`; million cycles per epoch is derived as `mhz * SECONDS_PER_EPOCH`.
+- **mhz** = million cycles per second per GPU (rate). In `gpu_configs` the column is `mhz`; total million cycles per epoch is derived as `mhz * num_gpus * SECONDS_PER_EPOCH`.
 
 ## Domain terms
 
