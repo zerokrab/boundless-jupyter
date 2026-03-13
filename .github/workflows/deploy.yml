@@ -40,12 +40,18 @@ jobs:
             jupyter-server \
             panel
 
-      - name: Build site
+      - name: Build JupyterLite site
         run: |
           jupyter lite build \
             --contents boundless_profitability.ipynb \
             --contents epochs.csv \
             --output-dir _site
+
+      - name: Build Panel standalone dashboard
+        run: |
+          panel convert dashboard.py \
+            --to pyodide-worker \
+            --out _site/dashboard/
 
       - name: Copy headers for Cloudflare Pages
         run: cp _headers _site/_headers
