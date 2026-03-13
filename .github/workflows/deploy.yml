@@ -38,7 +38,15 @@ jobs:
             jupyterlite-core \
             jupyterlite-pyodide-kernel \
             jupyter-server \
-            panel
+            panel \
+            pandas numpy matplotlib nbconvert
+
+      - name: Execute notebook to generate results.csv
+        run: |
+          jupyter nbconvert --to notebook --execute \
+            --ExecutePreprocessor.timeout=120 \
+            boundless_profitability.ipynb \
+            --output boundless_profitability.ipynb
 
       - name: Build JupyterLite site
         run: |
