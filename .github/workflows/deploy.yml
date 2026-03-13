@@ -37,14 +37,30 @@ jobs:
           pip install \
             jupyterlite-core \
             jupyterlite-pyodide-kernel \
-            jupyter-server
+            jupyter-server \
+            panel \
+            pandas numpy matplotlib nbconvert
 
-      - name: Build site
+      - name: Execute notebook to generate results.csv
+        run: |
+          jupyter nbconvert --to notebook --execute \
+            --ExecutePreprocessor.timeout=120 \
+            boundless_profitability.ipynb \
+            --output boundless_profitability.ipynb
+
+      - name: Build JupyterLite site
         run: |
           jupyter lite build \
             --contents boundless_profitability.ipynb \
             --contents epochs.csv \
+            --contents dashboard.py \
             --output-dir _site
+
+      - name: Build Panel standalone dashboard
+        run: |
+          panel convert dashboard.py \
+            --to pyodide-worker \
+            --out _site/dashboard/
 
       - name: Copy headers for Cloudflare Pages
         run: cp _headers _site/_headers
