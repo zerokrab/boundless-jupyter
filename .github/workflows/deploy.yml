@@ -39,7 +39,7 @@ jobs:
             jupyterlite-pyodide-kernel \
             jupyter-server \
             panel \
-            pandas numpy matplotlib nbconvert
+            pandas numpy matplotlib nbconvert ipykernel
 
       - name: Execute notebook to generate results.csv
         run: |
