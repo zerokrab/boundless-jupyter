@@ -6,7 +6,7 @@ Visit [jupyter.zerokrab.com](https://jupyter.zerokrab.com) for a live hosted ver
 
 ## Notebooks
 
-- [boundless_profitability.ipny](/boundless_profitability.ipynb) - Models various scenarios to determine profitability.
+- [boundless_profitability.ipynb](/boundless_profitability.ipynb) - Models various scenarios to determine profitability.
 
 ## Usage
 
