@@ -73,7 +73,7 @@ def build_dashboard(df: pd.DataFrame | None = None) -> pn.viewable.Viewable:
             ax1.text(
                 bar.get_width() + span * 0.02,
                 bar.get_y() + bar.get_height() / 2,
-                f"${p:+.2f}", va="center", fontsize=9,
+                "$" + f"{p:+.2f}", va="center", fontsize=9,
             )
 
         x = range(len(labels))
@@ -128,7 +128,7 @@ def build_dashboard(df: pd.DataFrame | None = None) -> pn.viewable.Viewable:
             ax.text(
                 bar.get_width() + span * 0.02,
                 bar.get_y() + bar.get_height() / 2,
-                f"${v:.3f}", va="center", fontsize=9,
+                "$" + f"{v:.3f}", va="center", fontsize=9,
             )
         plt.tight_layout()
         plt.close(fig)
