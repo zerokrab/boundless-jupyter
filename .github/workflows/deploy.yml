@@ -50,10 +50,8 @@ jobs:
         run: cp _headers _site/_headers
 
       - name: Deploy to Cloudflare Pages
-        uses: cloudflare/pages-action@v1
+        uses: cloudflare/wrangler-action@v3
         with:
           apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
           accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
-          projectName: zerokrab-boundless-jupyter
-          directory: _site
-          gitHubToken: ${{ secrets.GITHUB_TOKEN }}
+          command: pages deploy _site --project-name=zerokrab-boundless-jupyter --commit-dirty=true
