@@ -53,6 +53,7 @@ jobs:
           jupyter lite build \
             --contents boundless_profitability.ipynb \
             --contents epochs.csv \
+            --contents dashboard.py \
             --output-dir _site
 
       - name: Build Panel standalone dashboard
