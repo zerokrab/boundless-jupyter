@@ -25,35 +25,35 @@ def build_dashboard(df: pd.DataFrame | None = None) -> pn.viewable.Viewable:
     df : pd.DataFrame, optional
         Pre-computed revenue_df from the notebook. If None, loads results.csv.
 
-    Expected columns: scenario, zkc_price_usd, market_order_util,
+    Expected columns: scenario, zkc_price_usd, market_reward_usd_per_mhz,
                        profit_per_epoch, povw_revenue, market_revenue,
                        cost_per_epoch, label
     """
     if df is None:
         df = pd.read_csv("results.csv")
 
-    # Derive available discrete ZKC values from data; use any reference util for interpolation
+    # Derive available discrete ZKC values from data; use any reference reward for interpolation
     zkc_prices = sorted(df["zkc_price_usd"].unique())
-    ref_util = df["market_order_util"].iloc[0]  # reference utilization for rate derivation
+    ref_reward = df["market_reward_usd_per_mhz"].iloc[0]  # reference reward for rate derivation
 
     # ── Widgets ───────────────────────────────────────────────────────────────
 
     zkc_slider = pn.widgets.DiscreteSlider(
         name="ZKC Price (USD)", options=zkc_prices, value=zkc_prices[len(zkc_prices) // 2]
     )
-    util_slider = pn.widgets.FloatSlider(
-        name="Market Utilization", start=0.0, end=1.0, step=0.01, value=0.5,
-        format="0%",
+    reward_slider = pn.widgets.FloatSlider(
+        name="Market Reward (USD/MHz)", start=0.00001, end=0.0002, step=0.00001, value=0.00007,
+        format="0.00000",
     )
 
     # ── Tab 1: Profit Explorer ────────────────────────────────────────────────
 
-    @pn.depends(zkc_slider, util_slider)
-    def profit_chart(zkc_price, market_util):
-        # Base rows at the reference utilization; scale market_revenue linearly to market_util.
-        # market_revenue ∝ util (mhz * reward * util), so scaling is exact.
-        sub = df[(df["zkc_price_usd"] == zkc_price) & (df["market_order_util"] == ref_util)]
-        scale = market_util / ref_util if ref_util > 0 else 0
+    @pn.depends(zkc_slider, reward_slider)
+    def profit_chart(zkc_price, market_reward):
+        # Base rows at the reference reward; scale market_revenue linearly to market_reward.
+        # market_revenue ∝ reward (mhz * reward * util), so scaling is exact.
+        sub = df[(df["zkc_price_usd"] == zkc_price) & (df["market_reward_usd_per_mhz"] == ref_reward)]
+        scale = market_reward / ref_reward if ref_reward > 0 else 0
 
         labels = sub["label"].tolist()
         costs = sub["cost_per_epoch"].tolist()
@@ -93,11 +93,11 @@ def build_dashboard(df: pd.DataFrame | None = None) -> pn.viewable.Viewable:
 
     # ── Tab 2: Break-even ─────────────────────────────────────────────────────
 
-    @pn.depends(util_slider)
-    def breakeven_chart(market_util):
-        # Scale market_revenue to the chosen utilization, then find min profitable ZKC price
-        scale = market_util / ref_util if ref_util > 0 else 0
-        sub = df[df["market_order_util"] == ref_util].copy()
+    @pn.depends(reward_slider)
+    def breakeven_chart(market_reward):
+        # Scale market_revenue to the chosen reward, then find min profitable ZKC price
+        scale = market_reward / ref_reward if ref_reward > 0 else 0
+        sub = df[df["market_reward_usd_per_mhz"] == ref_reward].copy()
         sub = sub.assign(
             market_revenue_scaled=sub["market_revenue"] * scale,
         )
@@ -139,7 +139,7 @@ def build_dashboard(df: pd.DataFrame | None = None) -> pn.viewable.Viewable:
     sidebar = pn.Column(
         "### Controls",
         zkc_slider,
-        util_slider,
+        reward_slider,
         width=240,
     )
 
