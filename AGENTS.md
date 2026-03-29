@@ -8,7 +8,7 @@ Instructions for AI agents working on this project.
 
 - **README.md** – Domain background, costs, revenue (POVW + market). Read first for context.
 - **boundless_profitability.ipynb** – Single Jupyter notebook: config → cost → revenue → profit → break-even → scenario tables/charts. All figures are **per epoch**. Inputs live under `## 1. Inputs`:
-  - **1.1 Model Parameters**: `ZKC_PRICES_USD`, `MARKET_ORDER_UTIL`, `MARKET_REWARD_USD_PER_MHZ`, `FIXED_COST_MONTHLY_USD`, and `gpu_configs` (with `label`, `num_gpus`, `hourly_cost_usd`, `mhz`).
+  - **1.1 Model Parameters**: `ZKC_PRICES_USD`, `MARKET_ORDER_UTIL` (fixed scalar), `MARKET_REWARD_USD_PER_MHZ` (range of scenarios), `FIXED_COST_MONTHLY_USD`, and `gpu_configs` (with `label`, `num_gpus`, `hourly_cost_usd`, `mhz`).
   - **1.2 Constants**: `HOURS_PER_EPOCH`, `SECONDS_PER_EPOCH`, `EPOCHS_PER_MONTH`.
   - **1.3 POVW Reward Data**: parsing logic that derives `POVW_ZKC_PER_MHZ_PER_EPOCH` from `epochs.csv`.
 - **epochs.csv** – Data export: Total Cycles (all provers) and Mining Rewards (ZKC) per epoch. Used to compute **ZKC per mhz per epoch** for POVW. Updated as new data becomes available. The notebook excludes the **latest epoch** (row 1) as it may still be ongoing.
@@ -26,7 +26,7 @@ Instructions for AI agents working on this project.
 | Term | Meaning |
 |------|--------|
 | POVW rewards | ZKC distributed every epoch based on cycles proven; modeled as ZKC per mhz per epoch. |
-| Market rewards | Per-proof payouts; modeled as average USD per mhz, scaled by **market order utilization** (share of capacity fulfilling market orders; e.g. 50%, 75%, 100%). POVW is unchanged by utilization. |
+| Market rewards | Per-proof payouts; modeled as a range of USD per mhz scenarios, scaled by a fixed **market order utilization** (share of capacity fulfilling market orders). POVW is unchanged by utilization. |
 | ZKC | Cryptocurrency used in Boundless; price in USD is a key input. |
 | GPU config | A labeled GPU setup (e.g. `Mock 5090 0.2 5090 x8`) with `label`, `num_gpus`, `mhz` (million cycles/sec), and `hourly_cost_usd`. |
 
@@ -36,7 +36,8 @@ Instructions for AI agents working on this project.
 - **POVW from data:** `POVW_ZKC_PER_MHZ_PER_EPOCH` is computed from **epochs.csv** (Total Cycles and Mining Rewards); the latest epoch is always excluded. Do not replace this with a literal placeholder.
 - **Placeholders:** Other inputs may use placeholders (e.g. `MARKET_REWARD_USD_PER_MHZ`, sample GPU rows). Preserve the structure; replace values with real data when available. Label placeholders in comments or markdown.
 - **Cost conversion:** GPU rental is stored **per hour** (`hourly_cost_usd`) and converted to per-epoch as `rental_per_epoch_usd`. Fixed cost is monthly, converted to per-epoch with `EPOCHS_PER_MONTH`, and added **separately** when computing total cost (profit / break-even).
-- **Market order utilization:** Configurable (e.g. 50%, 75%, 100%); market revenue = mhz × reward_per_mhz × util. POVW revenue is not scaled by utilization.
+- **Market order utilization:** Fixed scalar (e.g. 0.5); market revenue = mhz × reward_per_mhz × util. POVW revenue is not scaled by utilization.
+- **Market reward rate:** Configurable range (e.g. $0.00003–$0.0001/MHz); each value produces a separate scenario.
 
 ## What to change vs preserve
 
