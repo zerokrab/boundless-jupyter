@@ -42,4 +42,4 @@ Then open [http://localhost:8000](http://localhost:8000) in your browser.
 
 ### Option 3 — IDE
 
-Most Python compatible IDEs have support for running Jupyter Notebooks.
+Most Python IDEs have support for running Jupyter Notebooks.
