@@ -1,0 +1,13 @@
+name = "boundless-api-proxy"
+main = "src/index.js"
+compatibility_date = "2025-01-01"
+
+routes = [
+  { pattern = "proxy.jupyter.zerokrab.com/*", custom_domain = true }
+]
+
+[[unsafe.bindings]]
+name = "RATE_LIMITER"
+type = "ratelimit"
+namespace_id = "1001"
+simple = { limit = 30, period = 60 }
