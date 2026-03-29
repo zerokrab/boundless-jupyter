@@ -1,6 +1,6 @@
 # boundless-jupyter
 
-This repo contains [boundless_profitability.ipynb](/boundless_profitability.ipynb) which models various scenarios to determine profitability.
+This repo contains a Jupyter Notebook ([boundless_profitability.ipynb](/boundless_profitability.ipynb)) which models various scenarios to determine profitability.
 
 Hosted at [jupyter.zerokrab.com](https://jupyter.zerokrab.com).
 
