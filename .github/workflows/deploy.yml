@@ -52,6 +52,7 @@ jobs:
         run: |
           jupyter lite build \
             --contents boundless_profitability.ipynb \
+            --contents prover_stats.ipynb \
             --contents epochs.csv \
             --contents dashboard.py \
             --output-dir _site
