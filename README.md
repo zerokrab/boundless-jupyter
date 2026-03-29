@@ -1,10 +1,23 @@
 # boundless-jupyter
 
-A collection of jupyter notebooks exploring the cost/revenue/profit of running Boundless provers.
+This repo contains a Jupyter Notebook ([boundless_profitability.ipynb](/boundless_profitability.ipynb)) which models various scenarios to determine profitability.
 
-## Notebooks
+Hosted at [jupyter.zerokrab.com](https://jupyter.zerokrab.com).
 
-- [boundless_profitability.ipynb](/boundless_profitability.ipynb) - Models various scenarios to determine profitability.
+## Prerequisites
+
+This repo can be run as-is, but some inputs require additional steps for best results.
+
+### Epoch Data (`epochs.csv`)
+To fetch the most up-to-date epoch data:
+1. Goto https://explorer.boundless.network/epochs
+2. In the top right click "Export CSV"
+3. Replace the existing `epochs.csv` 
+
+### Market Utilization
+To calculate the average market utilization (% of PoVW from market orders) for a specific prover see [boundless-market-util](https://github.com/zerokrab/boundless-market-util). 
+
+This is used as an input for modeling in the notebook (see 1.1 Model Parameters).
 
 ## Usage
 
