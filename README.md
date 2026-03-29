@@ -23,7 +23,11 @@ Visit **[jupyter.zerokrab.com](https://jupyter.zerokrab.com)** — JupyterLite r
 
 ### Option 2 — JupyterLite Locally
 
-Run the same browser-based JupyterLite environment on your machine. All notebooks work identically to the hosted version.
+Run the same browser-based JupyterLite environment on your machine.
+
+> ⚠️ **Note:** `prover_stats.ipynb` **will not work** with local JupyterLite. Even running locally, JupyterLite executes inside the browser — which enforces CORS and blocks requests to `explorer.boundless.network` from `localhost`. Use [Option 3](#option-3--standard-jupyter-jupyterlab--classic-notebook) for local development with that notebook.
+
+`boundless_profitability.ipynb` works fine with local JupyterLite as it doesn't make external API calls.
 
 **Requirements:** Python 3.9+, `pip`
 
