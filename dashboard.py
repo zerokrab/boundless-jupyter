@@ -4,7 +4,9 @@ Boundless Prover Profitability Dashboard
 Visualization-only — no model logic. All computation lives in the notebook.
 
 Usage:
-  Notebook:   from dashboard import build_dashboard; build_dashboard(revenue_df)
+  Notebook:   from dashboard import build_profit_dashboard, build_breakeven_dashboard
+              build_profit_dashboard(revenue_df)
+              build_breakeven_dashboard(revenue_df)
   Local dev:  panel serve dashboard.py  (requires results.csv)
   Static:     panel convert dashboard.py --to pyodide-worker --out dist/
 """
@@ -16,9 +18,9 @@ import panel as pn
 pn.extension()
 
 
-def build_dashboard(df: pd.DataFrame | None = None) -> pn.viewable.Viewable:
+def build_profit_dashboard(df: pd.DataFrame | None = None) -> pn.viewable.Viewable:
     """
-    Build the Panel dashboard.
+    Build the Profit Explorer dashboard.
 
     Parameters
     ----------
@@ -46,7 +48,7 @@ def build_dashboard(df: pd.DataFrame | None = None) -> pn.viewable.Viewable:
         format="0.00",
     )
 
-    # ── Tab 1: Profit Explorer ────────────────────────────────────────────────
+    # ── Profit Explorer ───────────────────────────────────────────────────────
 
     @pn.depends(zkc_slider, reward_slider)
     def profit_chart(zkc_price, market_reward):
@@ -92,7 +94,35 @@ def build_dashboard(df: pd.DataFrame | None = None) -> pn.viewable.Viewable:
         plt.close(fig)
         return fig
 
-    # ── Tab 2: Break-even ─────────────────────────────────────────────────────
+    return pn.Row(pn.Column("### Controls", zkc_slider, reward_slider, width=240), pn.pane.Matplotlib(profit_chart, tight=True))
+
+
+def build_breakeven_dashboard(df: pd.DataFrame | None = None) -> pn.viewable.Viewable:
+    """
+    Build the Break-even Analysis dashboard.
+
+    Parameters
+    ----------
+    df : pd.DataFrame, optional
+        Pre-computed revenue_df from the notebook. If None, loads results.csv.
+
+    Expected columns: scenario, zkc_price_usd, market_reward_usd_per_mhz,
+                       profit_per_epoch, povw_revenue, market_revenue,
+                       cost_per_epoch, label
+    """
+    if df is None:
+        df = pd.read_csv("results.csv")
+
+    ref_reward = df["market_reward_usd_per_mhz"].iloc[0]  # reference reward for rate derivation
+
+    # ── Widgets ───────────────────────────────────────────────────────────────
+
+    reward_slider = pn.widgets.FloatSlider(
+        name="Market Reward (USD/Bcycle)", start=0.01, end=0.2, step=0.01, value=0.07,
+        format="0.00",
+    )
+
+    # ── Break-even ────────────────────────────────────────────────────────────
 
     @pn.depends(reward_slider)
     def breakeven_chart(market_reward):
@@ -136,23 +166,29 @@ def build_dashboard(df: pd.DataFrame | None = None) -> pn.viewable.Viewable:
         plt.close(fig)
         return fig
 
-    # ── Layout ────────────────────────────────────────────────────────────────
+    return pn.Row(pn.Column("### Controls", reward_slider, width=240), pn.pane.Matplotlib(breakeven_chart, tight=True))
 
-    sidebar = pn.Column(
-        "### Controls",
-        zkc_slider,
-        reward_slider,
-        width=240,
-    )
 
-    tabs = pn.Tabs(
-        ("Profit Explorer", pn.pane.Matplotlib(profit_chart, tight=True)),
-        ("Break-even",      pn.pane.Matplotlib(breakeven_chart, tight=True)),
-    )
+def build_dashboard(df: pd.DataFrame | None = None) -> pn.viewable.Viewable:
+    """
+    Backward-compatible wrapper that stacks both dashboards.
 
-    return pn.Row(sidebar, tabs)
+    Parameters
+    ----------
+    df : pd.DataFrame, optional
+        Pre-computed revenue_df from the notebook. If None, loads results.csv.
+    """
+    if df is None:
+        df = pd.read_csv("results.csv")
+
+    return pn.Column(build_profit_dashboard(df), pn.layout.Divider(), build_breakeven_dashboard(df))
 
 
 # Standalone entry point (panel serve / panel convert)
 if __name__ == "__main__" or pn.state.served:
-    build_dashboard().servable()
+    df = pd.read_csv("results.csv") if 'df' not in dir() else df
+    pn.Column(
+        build_profit_dashboard(df),
+        pn.layout.Divider(),
+        build_breakeven_dashboard(df),
+    ).servable()
