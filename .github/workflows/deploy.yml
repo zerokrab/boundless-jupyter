@@ -66,8 +66,10 @@ jobs:
             --out _site/dashboard/
           cp results.csv _site/dashboard/results.csv
 
-      - name: Copy headers for Cloudflare Pages
-        run: cp _headers _site/_headers
+      - name: Copy headers and redirects for Cloudflare Pages
+        run: |
+          cp _headers _site/_headers
+          cp _redirects _site/_redirects
 
       - name: Deploy to Cloudflare Pages
         id: deploy
