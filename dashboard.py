@@ -44,8 +44,8 @@ def build_profit_dashboard(df: pd.DataFrame | None = None) -> pn.viewable.Viewab
         name="ZKC Price (USD)", options=zkc_prices, value=zkc_prices[len(zkc_prices) // 2]
     )
     reward_slider = pn.widgets.FloatSlider(
-        name="Market Reward (USD/MHz)", start=0.00001, end=0.0002, step=0.00001, value=0.00007,
-        format="0.00000",
+        name="Market Reward (USD/Bcycle)", start=0.01, end=0.2, step=0.01, value=0.07,
+        format="0.00",
     )
 
     # ── Profit Explorer ───────────────────────────────────────────────────────
@@ -55,7 +55,8 @@ def build_profit_dashboard(df: pd.DataFrame | None = None) -> pn.viewable.Viewab
         # Base rows at the reference reward; scale market_revenue linearly to market_reward.
         # market_revenue ∝ reward (mhz * reward * util), so scaling is exact.
         sub = df[(df["zkc_price_usd"] == zkc_price) & (df["market_reward_usd_per_mhz"] == ref_reward)]
-        scale = market_reward / ref_reward if ref_reward > 0 else 0
+        market_reward_mhz = market_reward / 1000
+        scale = market_reward_mhz / ref_reward if ref_reward > 0 else 0
 
         labels = sub["label"].tolist()
         costs = sub["cost_per_epoch"].tolist()
@@ -117,8 +118,8 @@ def build_breakeven_dashboard(df: pd.DataFrame | None = None) -> pn.viewable.Vie
     # ── Widgets ───────────────────────────────────────────────────────────────
 
     reward_slider = pn.widgets.FloatSlider(
-        name="Market Reward (USD/MHz)", start=0.00001, end=0.0002, step=0.00001, value=0.00007,
-        format="0.00000",
+        name="Market Reward (USD/Bcycle)", start=0.01, end=0.2, step=0.01, value=0.07,
+        format="0.00",
     )
 
     # ── Break-even ────────────────────────────────────────────────────────────
@@ -126,7 +127,8 @@ def build_breakeven_dashboard(df: pd.DataFrame | None = None) -> pn.viewable.Vie
     @pn.depends(reward_slider)
     def breakeven_chart(market_reward):
         # Scale market_revenue to the chosen reward, then find min profitable ZKC price
-        scale = market_reward / ref_reward if ref_reward > 0 else 0
+        market_reward_mhz = market_reward / 1000
+        scale = market_reward_mhz / ref_reward if ref_reward > 0 else 0
         sub = df[df["market_reward_usd_per_mhz"] == ref_reward].copy()
         sub = sub.assign(
             market_revenue_scaled=sub["market_revenue"] * scale,
